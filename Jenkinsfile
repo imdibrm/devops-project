@@ -7,13 +7,16 @@ pipeline {
         ECR_BACKEND = "984285320367.dkr.ecr.ap-south-1.amazonaws.com/backend"
         CLUSTER_NAME = "devops-intern-cluster"
         NAMESPACE = "devops"
+        IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
+                git branch: 'main',
+                credentialsId: 'github-pat',
+                url: 'https://github.com/imdibrm/devops-project.git'
             }
         }
 
@@ -27,8 +30,8 @@ pipeline {
         stage('Docker Build') {
             steps {
                 sh '''
-                docker build -t backend:v1 ./backend
-                docker build -t frontend:v1 ./frontend
+                docker build -t backend:$IMAGE_TAG ./backend
+                docker build -t frontend:$IMAGE_TAG ./frontend
                 '''
             }
         }
@@ -38,11 +41,11 @@ pipeline {
                 sh '''
                 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 984285320367.dkr.ecr.ap-south-1.amazonaws.com
 
-                docker tag backend:v1 $ECR_BACKEND:v1
-                docker tag frontend:v1 $ECR_FRONTEND:v1
+                docker tag backend:$IMAGE_TAG $ECR_BACKEND:$IMAGE_TAG
+                docker tag frontend:$IMAGE_TAG $ECR_FRONTEND:$IMAGE_TAG
 
-                docker push $ECR_BACKEND:v1
-                docker push $ECR_FRONTEND:v1
+                docker push $ECR_BACKEND:$IMAGE_TAG
+                docker push $ECR_FRONTEND:$IMAGE_TAG
                 '''
             }
         }
