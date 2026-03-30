@@ -1,4 +1,4 @@
-# Headless Service for Postgres StatefulSet
+# Headless Service for potential Postgres StatefulSet
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,54 +12,32 @@ spec:
     targetPort: 5432
   clusterIP: None
 ---
-# PostgreSQL StatefulSet with ephemeral emptyDir storage
-# NOTE: Data does NOT persist across pod restarts (suitable for t3.micro testing)
-# For production, use RDS or install EBS CSI driver
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: postgres
-  namespace: devops
-spec:
-  serviceName: postgres-service
-  replicas: 1
-  selector:
-    matchLabels:
-      app: postgres
-  template:
-    metadata:
-      labels:
-        app: postgres
-    spec:
-      containers:
-      - name: postgres
-        image: postgres:15-alpine
-        ports:
-        - containerPort: 5432
-        env:
-        - name: POSTGRES_DB
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: DB_NAME
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: DB_PASSWORD
-        - name: PGDATA
-          value: /var/lib/postgresql/data/pgdata
-        resources:
-          requests:
-            cpu: "15m"
-            memory: "24Mi"
-          limits:
-            cpu: "40m"
-            memory: "64Mi"
-        volumeMounts:
-        - name: postgres-storage
-          mountPath: /var/lib/postgresql/data
-      volumes:
-      - name: postgres-storage
-        emptyDir:
-          sizeLimit: 1Gi
+# NOTE: PostgreSQL StatefulSet commented out due to t3.micro IP constraints
+# Each pod consumes an elastic IP from AWS VPC CNI. t3.micro can only support ~8 total pods across all namespaces.
+# With 6 system pods (aws-node, coredns, kube-proxy, metrics-server), only 2 slots remain.
+# This leaves room for backend and frontend deployments only.
+# For production: Deploy RDS database in private subnets instead.
+# For testing: Backend uses in-memory storage or ConfigMap data.
+#
+# Original StatefulSet (commented out):
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: postgres
+#   namespace: devops
+# spec:
+#   serviceName: postgres-service
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: postgres
+#   template:
+#     metadata:
+#       labels:
+#         app: postgres
+#     spec:
+#       containers:
+#       - name: postgres
+#         image: postgres:15-alpine
+#         ports:
+#         - containerPort: 5432
