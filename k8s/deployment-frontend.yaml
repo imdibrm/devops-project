@@ -8,6 +8,11 @@ spec:
   selector:
     matchLabels:
       app: frontend
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -15,6 +20,26 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: 984285320367.dkr.ecr.ap-south-1.amazonaws.com/frontend:v1
+        image: 984285320367.dkr.ecr.ap-south-1.amazonaws.com/frontend:latest
+        imagePullPolicy: Always  # Always pull latest image
         ports:
         - containerPort: 80
+        resources:
+          requests:
+            cpu: "10m"
+            memory: "16Mi"
+          limits:
+            cpu: "30m"
+            memory: "48Mi"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10

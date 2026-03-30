@@ -3,12 +3,18 @@ const app = express();
 
 const PORT = 3000;
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy' });
+});
+
+app.get('/api', (req, res) => {
+  res.json({ message: 'Backend API running on EKS' });
+});
+
 app.get('/', (req, res) => {
-    res.json({
-        message: "Backend API running in EKS 🚀"
-    });
+  res.json({ message: 'Backend API running on EKS' });
 });
 
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
