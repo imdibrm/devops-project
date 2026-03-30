@@ -75,16 +75,12 @@ pipeline {
           # Update backend deployment with new image tag
           kubectl set image deployment/backend \
             backend=$ECR_BACKEND:$IMAGE_TAG \
-            -n $NAMESPACE --record
+            -n $NAMESPACE
           
           # Update frontend deployment with new image tag
           kubectl set image deployment/frontend \
             frontend=$ECR_FRONTEND:$IMAGE_TAG \
-            -n $NAMESPACE --record
-
-          # Force pods to restart with new images (ImagePullPolicy: Always required)
-          kubectl rollout restart deployment/backend -n $NAMESPACE
-          kubectl rollout restart deployment/frontend -n $NAMESPACE
+            -n $NAMESPACE
         '''
       }
     }
