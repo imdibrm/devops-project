@@ -8,7 +8,7 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/api', (req, res) => {
-  res.json({ message: 'Backend API running on EKS' });
+  res.json({ message: 'Backend API running on EKS — Push #2' });
 });
 
 app.get('/', (req, res) => {

@@ -43,9 +43,15 @@ spec:
               name: app-config
               key: LOG_LEVEL
         - name: DB_HOST
-          value: "postgres-service.devops.svc.cluster.local"
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_HOST
         - name: DB_PORT
-          value: "5432"
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DB_PORT
         - name: DB_PASSWORD
           valueFrom:
             secretKeyRef:
