@@ -61,16 +61,12 @@ pipeline {
       steps {
         sh '''
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
-
-          # Apply all k8s manifests with --validate=false to bypass OpenAPI validation issues
           kubectl apply -f k8s/ --validate=false
 
-          # Update backend deployment with new image tag
           kubectl set image deployment/backend \
             backend=$ECR_BACKEND:$IMAGE_TAG \
             -n $NAMESPACE
           
-          # Update frontend deployment with new image tag
           kubectl set image deployment/frontend \
             frontend=$ECR_FRONTEND:$IMAGE_TAG \
             -n $NAMESPACE
