@@ -61,7 +61,15 @@ pipeline {
       steps {
         sh '''
           aws eks update-kubeconfig --name $CLUSTER_NAME --region $AWS_REGION
-          kubectl apply -f k8s/ --validate=false
+
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -f k8s/configmap-secret.yaml
+          kubectl apply -f k8s/deployment-backend.yaml
+          kubectl apply -f k8s/deployment-frontend.yaml
+          kubectl apply -f k8s/service-backend.yaml
+          kubectl apply -f k8s/service-frontend.yaml
+          kubectl apply -f k8s/ingress.yaml
+          kubectl apply -f k8s/hpa.yaml
 
           kubectl set image deployment/backend \
             backend=$ECR_BACKEND:$IMAGE_TAG \
